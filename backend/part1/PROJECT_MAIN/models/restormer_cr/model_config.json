@@ -1,0 +1,27 @@
+{
+  "model_key": "restormer_cr",
+  "cls": "RestormerCR",
+  "kwargs": {
+    "c": 32
+  },
+  "display": "Restormer-CR",
+  "train_cfg": {
+    "crop": 128,
+    "batch_size": 4,
+    "epochs": 6,
+    "lr": 0.0002,
+    "lr_min": 2e-06,
+    "weight_decay": 0.0001,
+    "betas": [
+      0.9,
+      0.999
+    ],
+    "lambda_spa": 1.0,
+    "lambda_freq": 0.1,
+    "alpha_ssim": 0.1,
+    "n_val_monitor": 40
+  },
+  "best_val_psnr": 28.147696018218994,
+  "n_params": 1158377,
+  "train_time_s": 2057.712459087372
+}

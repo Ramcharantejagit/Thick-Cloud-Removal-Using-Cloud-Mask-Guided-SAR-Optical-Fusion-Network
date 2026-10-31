@@ -1,0 +1,41 @@
+{% extends "base.html" %}{% block title %}Remove clouds{% endblock %}
+{% block content %}
+<div class="container py-3">
+  <h2>Remove clouds</h2>
+  <p class="text-muted">Run the deployed SAR-optical fusion model on a held-out test patch or on your own co-registered Sentinel-1 / Sentinel-2 GeoTIFFs.</p>
+  <ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-sample" type="button">Sample patch ({{ samples|length }})</button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-upload" type="button">Upload GeoTIFFs</button></li>
+  </ul>
+  <div class="tab-content border border-top-0 rounded-bottom p-3 bg-white shadow-sm">
+    <div class="tab-pane fade show active" id="tab-sample">
+      {% if samples %}
+      <form method="post" class="run-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="mode" value="sample">
+        <div class="row g-2 align-items-end">
+          <div class="col-md-5"><label class="form-label" for="filter">Filter</label><input id="filter" class="form-control" placeholder="tile, region, date…"></div>
+          <div class="col-md-7"><label class="form-label" for="patch">Test patch (never seen in training; includes a cloud-free reference)</label>
+            <select class="form-select" id="patch" name="patch" required size="8">
+              {% for s in samples %}<option value="{{ s.patch }}" {% if loop.first %}selected{% endif %}>{{ s.patch }} · tile {{ s.tile }} · {{ (s.cloud_frac*100)|round(1) }}% cloud · {{ s.cloudy_date }}</option>{% endfor %}
+            </select></div>
+        </div>
+        <div class="form-check form-switch mt-3"><input class="form-check-input" type="checkbox" id="tta1" name="tta" checked><label class="form-check-label" for="tta1">Estimate uncertainty with 8-view test-time augmentation (slower, about 8× runtime)</label></div>
+        <button class="btn btn-primary mt-3"><span class="spinner-border spinner-border-sm d-none me-1"></span><i class="bi bi-play-fill"></i> Run cloud removal</button>
+      </form>
+      {% else %}<p class="text-muted mb-0">Sample data is not available on this server (data/raw not present). Use the upload tab.</p>{% endif %}
+    </div>
+    <div class="tab-pane fade" id="tab-upload">
+      <form method="post" enctype="multipart/form-data" class="run-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="mode" value="upload">
+        <div class="row g-3">
+          <div class="col-md-4"><label class="form-label" for="s1">Sentinel-1 GeoTIFF <span class="text-danger">*</span></label><input class="form-control" type="file" id="s1" name="s1" accept=".tif,.tiff" required><div class="form-text">2 bands: VV, VH in dB, 256×256.</div></div>
+          <div class="col-md-4"><label class="form-label" for="s2">Cloudy Sentinel-2 GeoTIFF <span class="text-danger">*</span></label><input class="form-control" type="file" id="s2" name="s2" accept=".tif,.tiff" required><div class="form-text">13 bands L1C DN (B01…B12 incl. B8A), same grid.</div></div>
+          <div class="col-md-4"><label class="form-label" for="ref">Cloud-free reference (optional)</label><input class="form-control" type="file" id="ref" name="ref" accept=".tif,.tiff"><div class="form-text">13 bands; enables PSNR / SAM / MAE.</div></div>
+        </div>
+        <div class="form-check form-switch mt-3"><input class="form-check-input" type="checkbox" id="tta2" name="tta" checked><label class="form-check-label" for="tta2">Estimate uncertainty with 8-view test-time augmentation</label></div>
+        <button class="btn btn-primary mt-3"><span class="spinner-border spinner-border-sm d-none me-1"></span><i class="bi bi-upload"></i> Upload &amp; run</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

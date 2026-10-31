@@ -1,0 +1,29 @@
+{% extends "base.html" %}{% block title %}About{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <h2 class="mb-3">About CloudClear</h2>
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <p>CloudClear is the web front-end of an implementation of <strong>“Thick Cloud Removal Using Cloud Mask-Guided SAR-Optical Fusion Network” (PSF-CR)</strong>, S. Meng <em>et al.</em>, IEEE JSTARS, vol. 19, pp. 4373–4388, 2026 (DOI 10.1109/JSTARS.2026.3651496).</p>
+      <h5 class="mt-4">How it works</h5>
+      <ol>
+        <li><strong>Input</strong>: a 256×256 Sentinel-1 patch (VV, VH in dB) and the co-registered cloudy Sentinel-2 L1C patch (13 bands).</li>
+        <li><strong>Preprocessing</strong>: SAR clipped to [-25, 0] / [-32.5, 0] dB, optical clipped to [0, 10000], both scaled to [0, 1]; a rule-based detector creates the cloud mask.</li>
+        <li><strong>Model</strong>: the best model from training (<em>{{ cfg.display_name }}</em>): frequency- and spatial-domain SAR-optical cross-alignment, cloud-mask-guided rectification and a U-shaped reconstruction network.</li>
+        <li><strong>Output</strong>: a cloud-free 13-band GeoTIFF (georeferenced), an uncertainty map from 8-view test-time augmentation, and quality metrics when a cloud-free reference is available.</li>
+      </ol>
+      <h5 class="mt-4">Data</h5>
+      <p>Models were trained on 1,149 real SEN12MS-CR-style triplets (Sentinel-1 RTC + cloudy/cloud-free Sentinel-2 L1C) from 8 regions in Asia and Latin America, with whole regions held out for testing.</p>
+    </div>
+    <div class="col-lg-5">
+      <div class="card shadow-sm"><div class="card-header bg-white fw-semibold">Test results of all trained models</div>
+        <div class="card-body">{% include "_bench.html" %}</div></div>
+      {% if bench.regions %}
+      <div class="card shadow-sm mt-3"><div class="card-header bg-white fw-semibold">PSNR inside vs outside clouds</div>
+        <div class="card-body"><canvas id="regionChart" height="220"></canvas></div></div>
+      <script type="application/json" id="regionData">{{ bench.regions|tojson }}</script>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

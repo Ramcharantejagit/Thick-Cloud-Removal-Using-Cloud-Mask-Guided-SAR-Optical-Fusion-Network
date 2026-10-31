@@ -1,0 +1,46 @@
+{% extends "base.html" %}{% block title %}Home{% endblock %}
+{% block content %}
+<section class="hero text-white">
+  <div class="container py-5">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-7">
+        <span class="badge bg-info text-dark mb-3">Sentinel-1 SAR + Sentinel-2 optical fusion</span>
+        <h1 class="display-5 fw-bold">See through thick clouds.</h1>
+        <p class="lead opacity-75">CloudClear reconstructs cloud-free 13-band Sentinel-2 imagery by fusing it with cloud-penetrating Sentinel-1 radar, using a cloud-mask-guided SAR-optical fusion network (PSF-CR) trained on real Copernicus data.</p>
+        <div class="d-flex gap-2 flex-wrap">
+          {% if g.user and g.user.role=='user' %}<a class="btn btn-info btn-lg" href="{{ url_for('predict') }}"><i class="bi bi-magic me-1"></i>Remove clouds</a>
+          {% else %}<a class="btn btn-info btn-lg" href="{{ url_for('register') }}">Create an account</a>
+          <a class="btn btn-outline-light btn-lg" href="{{ url_for('login') }}">User login</a>{% endif %}
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="card bg-white bg-opacity-10 border-0 text-white">
+          <div class="card-body">
+            <div class="small text-uppercase opacity-75 mb-2">Deployed model · held-out test regions</div>
+            {% for r in bench.results if r.Model == cfg.display_name %}
+            <div class="row text-center g-2">
+              <div class="col-6"><div class="stat-big">{{ r.PSNR|num }}</div><div class="small opacity-75">PSNR (dB)</div></div>
+              <div class="col-6"><div class="stat-big">{{ r.SSIM|num(3) }}</div><div class="small opacity-75">SSIM</div></div>
+              <div class="col-6"><div class="stat-big">{{ r.SAM|num }}°</div><div class="small opacity-75">Spectral angle</div></div>
+              <div class="col-6"><div class="stat-big">{{ r.MAE|num(4) }}</div><div class="small opacity-75">MAE</div></div>
+            </div>
+            {% endfor %}
+            {% for r in bench.results if r.Model.startswith('Cloudy') %}<div class="small mt-3 opacity-75">Cloudy input without processing: {{ r.PSNR|num }} dB PSNR.</div>{% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="container py-5">
+  <div class="row g-4">
+    <div class="col-md-4"><div class="feature"><i class="bi bi-broadcast-pin"></i><h5>SAR guidance</h5><p class="text-muted">Sentinel-1 VV/VH backscatter is unaffected by clouds and supplies the structure hidden under them.</p></div></div>
+    <div class="col-md-4"><div class="feature"><i class="bi bi-mask"></i><h5>Cloud-mask aware</h5><p class="text-muted">A rule-based cloud detector produces the mask that steers fusion to cloudy pixels and suppresses SAR speckle elsewhere.</p></div></div>
+    <div class="col-md-4"><div class="feature"><i class="bi bi-activity"></i><h5>Measured quality</h5><p class="text-muted">Every run reports cloud cover, confidence from test-time augmentation and, with a reference image, PSNR / SAM / MAE.</p></div></div>
+  </div>
+  <div class="card mt-5 shadow-sm">
+    <div class="card-header bg-white fw-semibold">Model comparison on the test set (254 patches from 2 unseen regions)</div>
+    <div class="card-body">{% include "_bench.html" %}</div>
+  </div>
+</section>
+{% endblock %}

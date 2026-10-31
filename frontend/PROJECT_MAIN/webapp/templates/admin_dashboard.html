@@ -1,0 +1,27 @@
+{% extends "base.html" %}{% block title %}Admin dashboard{% endblock %}
+{% block content %}
+{% set badge = {'PENDING':'warning text-dark','APPROVED':'success','REJECTED':'danger','DISABLED':'secondary'} %}
+<div class="container py-3">
+  <h2>Admin dashboard</h2>
+  <div class="row g-3 mb-3">
+    {% for s in ('PENDING','APPROVED','REJECTED','DISABLED') %}
+    <div class="col-6 col-lg"><a class="text-decoration-none" href="{{ url_for('admin_users', status=s) }}"><div class="card stat shadow-sm"><div class="card-body"><div class="label">{{ s.title() }} users</div><div class="value text-{{ badge[s].split()[0] }}">{{ counts[s] }}</div></div></div></a></div>
+    {% endfor %}
+    <div class="col-6 col-lg"><div class="card stat shadow-sm"><div class="card-body"><div class="label">Cloud removals</div><div class="value">{{ npred }}</div><div class="small text-muted">{% if gain[0] is not none %}avg +{{ gain[0]|num }} dB ({{ gain[1] }} w/ ref){% endif %}</div></div></div></div>
+  </div>
+  <div class="card shadow-sm mb-3 {% if pending %}border-warning{% endif %}"><div class="card-header bg-white fw-semibold">Pending approvals ({{ pending|length }})</div>
+    <div class="table-responsive"><table class="table table-sm align-middle mb-0"><tbody>
+      {% for u in pending %}{% set back = url_for('admin_dashboard') %}<tr><td>{{ u.name }}</td><td>{{ u.email }}</td><td class="small text-muted">{{ u.created_at }}</td><td class="text-end text-nowrap">{% include "_user_actions.html" %}</td></tr>
+      {% else %}<tr><td class="text-muted">No pending registrations.</td></tr>{% endfor %}
+    </tbody></table></div></div>
+  <div class="row g-3">
+    <div class="col-lg-6"><div class="card shadow-sm h-100"><div class="card-header bg-white fw-semibold">Cloud removals per day</div><div class="card-body">{% if per_day %}<canvas id="dayChart" height="160"></canvas>{% else %}<p class="text-muted mb-0">No runs yet.</p>{% endif %}</div></div></div>
+    <div class="col-lg-6"><div class="card shadow-sm h-100"><div class="card-header bg-white fw-semibold">Most active users</div><div class="card-body">{% if per_user %}<canvas id="userChart" height="160"></canvas>{% else %}<p class="text-muted mb-0">No runs yet.</p>{% endif %}</div></div></div>
+  </div>
+  <script type="application/json" id="adminData">{{ {'per_day': per_day, 'per_user': per_user}|tojson }}</script>
+  <div class="card shadow-sm mt-3"><div class="card-header bg-white d-flex justify-content-between"><span class="fw-semibold">Recent activity</span><a class="small" href="{{ url_for('admin_activity') }}">All activity →</a></div>
+    <div class="table-responsive"><table class="table table-sm mb-0"><tbody>
+      {% for a in acts %}<tr><td class="text-nowrap small">{{ a.created_at }}</td><td>{{ a.actor }}</td><td><span class="badge bg-secondary">{{ a.action }}</span></td><td class="small text-break">{{ a.detail }}</td></tr>{% endfor %}
+    </tbody></table></div></div>
+</div>
+{% endblock %}

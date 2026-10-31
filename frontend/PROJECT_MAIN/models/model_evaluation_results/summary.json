@@ -1,0 +1,81 @@
+{
+  "dataset": {
+    "n_patches": 1149,
+    "train": 781,
+    "test": 254,
+    "val": 114,
+    "test_rois": [
+      "20190102T111212",
+      "20190109T101238"
+    ],
+    "val_rois": [
+      "20190123T095735",
+      "20190109T001121",
+      "20190108T232857"
+    ]
+  },
+  "train_cfg": {
+    "crop": 128,
+    "batch_size": 4,
+    "epochs": 6,
+    "lr": 0.0002,
+    "lr_min": 2e-06,
+    "weight_decay": 0.0001,
+    "betas": [
+      0.9,
+      0.999
+    ],
+    "lambda_spa": 1.0,
+    "lambda_freq": 0.1,
+    "alpha_ssim": 0.1,
+    "n_val_monitor": 40
+  },
+  "results": [
+    {
+      "Model": "Cloudy input (no model)",
+      "PSNR": 20.9141,
+      "SSIM": 0.7366,
+      "SAM": 12.7128,
+      "MAE": 0.0784,
+      "Params (M)": 0.0,
+      "Inference (ms/img)": 0.0
+    },
+    {
+      "Model": "DSen2-CR",
+      "PSNR": 29.119,
+      "SSIM": 0.8618,
+      "SAM": 8.1288,
+      "MAE": 0.0282,
+      "Params (M)": 0.6071,
+      "Inference (ms/img)": 406.5584
+    },
+    {
+      "Model": "PSF-CR (paper)",
+      "PSNR": 30.0822,
+      "SSIM": 0.8635,
+      "SAM": 8.4417,
+      "MAE": 0.0245,
+      "Params (M)": 3.2971,
+      "Inference (ms/img)": 852.0819
+    },
+    {
+      "Model": "Restormer-CR",
+      "PSNR": 26.769,
+      "SSIM": 0.8275,
+      "SAM": 10.6497,
+      "MAE": 0.0379,
+      "Params (M)": 1.1584,
+      "Inference (ms/img)": 442.3326
+    },
+    {
+      "Model": "PSF-CR++ (proposed)",
+      "PSNR": 29.9823,
+      "SSIM": 0.8583,
+      "SAM": 8.3046,
+      "MAE": 0.0244,
+      "Params (M)": 3.6733,
+      "Inference (ms/img)": 845.1055
+    }
+  ],
+  "best_model": "PSF-CR (paper)"
+}

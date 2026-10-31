@@ -1,0 +1,7 @@
+{# action buttons for one user row; requires u and back #}
+{% macro btn(action, label, cls, confirm=None) %}<form method="post" action="{{ url_for('admin_user_action', user_id=u.id, action=action) }}" class="d-inline"{% if confirm %} data-confirm="{{ confirm }}"{% endif %}><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="back" value="{{ back }}"><button class="btn btn-sm {{ cls }}">{{ label }}</button></form>{% endmacro %}
+{% if u.status in ('PENDING','REJECTED') %}{{ btn('approve','Approve','btn-success') }}{% endif %}
+{% if u.status == 'PENDING' %}{{ btn('reject','Reject','btn-outline-danger') }}{% endif %}
+{% if u.status == 'APPROVED' %}{{ btn('disable','Disable','btn-outline-warning') }}{% endif %}
+{% if u.status == 'DISABLED' %}{{ btn('enable','Enable','btn-outline-success') }}{% endif %}
+{{ btn('delete','Delete','btn-outline-secondary', 'Delete ' ~ u.email ~ ' and all their records?') }}

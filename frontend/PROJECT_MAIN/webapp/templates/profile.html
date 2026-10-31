@@ -1,0 +1,24 @@
+{% extends "base.html" %}{% block title %}Profile{% endblock %}
+{% block content %}
+<div class="container py-3"><h2>Profile</h2>
+<div class="row g-3">
+  <div class="col-lg-4"><div class="card shadow-sm"><div class="card-body">
+    <div class="text-center mb-3"><i class="bi bi-person-circle display-4 text-primary"></i><h5 class="mt-2 mb-0">{{ g.user.name }}</h5><div class="text-muted small">{{ g.user.email }}</div></div>
+    <dl class="row small mb-0"><dt class="col-6">Status</dt><dd class="col-6"><span class="badge bg-success">{{ g.user.status }}</span></dd>
+      <dt class="col-6">Registered</dt><dd class="col-6">{{ g.user.created_at }}</dd><dt class="col-6">Approved</dt><dd class="col-6">{{ g.user.reviewed_at or '–' }}</dd>
+      <dt class="col-6">Cloud removals</dt><dd class="col-6">{{ stats.n }}</dd></dl>
+  </div></div></div>
+  <div class="col-lg-8">
+    <div class="card shadow-sm mb-3"><div class="card-header bg-white fw-semibold">Update name</div><div class="card-body">
+      <form method="post" class="row g-2"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="name">
+        <div class="col-md-8"><input class="form-control" name="name" value="{{ g.user.name }}" required minlength="2" maxlength="80" aria-label="Name"></div>
+        <div class="col-md-4"><button class="btn btn-primary w-100">Save</button></div></form></div></div>
+    <div class="card shadow-sm"><div class="card-header bg-white fw-semibold">Change password</div><div class="card-body">
+      <form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="password">
+        <div class="row g-2"><div class="col-md-4"><input class="form-control" type="password" name="current" placeholder="Current password" required autocomplete="current-password"></div>
+        <div class="col-md-4"><input class="form-control" type="password" name="new" placeholder="New password" required minlength="8" autocomplete="new-password"></div>
+        <div class="col-md-4"><input class="form-control" type="password" name="confirm" placeholder="Confirm new password" required autocomplete="new-password"></div></div>
+        <button class="btn btn-outline-primary mt-2">Change password</button></form></div></div>
+  </div>
+</div></div>
+{% endblock %}

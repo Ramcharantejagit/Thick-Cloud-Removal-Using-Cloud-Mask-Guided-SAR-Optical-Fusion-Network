@@ -1,0 +1,14 @@
+{# benchmark table from the real test results of the training notebook #}
+<div class="table-responsive">
+<table class="table table-sm align-middle mb-0">
+  <thead class="table-light"><tr><th>Model</th><th class="text-end">PSNR ↑</th><th class="text-end">SSIM ↑</th><th class="text-end">SAM ↓</th><th class="text-end">MAE ↓</th><th class="text-end">Params (M)</th></tr></thead>
+  <tbody>
+  {% for r in bench.results %}
+    <tr class="{% if r.Model == cfg.display_name %}table-info fw-semibold{% endif %}">
+      <td>{{ r.Model }}{% if r.Model == cfg.display_name %} <span class="badge bg-primary">deployed</span>{% endif %}</td>
+      <td class="text-end">{{ r.PSNR|num }}</td><td class="text-end">{{ r.SSIM|num(3) }}</td><td class="text-end">{{ r.SAM|num }}</td><td class="text-end">{{ r.MAE|num(4) }}</td><td class="text-end">{{ r['Params (M)']|num }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>

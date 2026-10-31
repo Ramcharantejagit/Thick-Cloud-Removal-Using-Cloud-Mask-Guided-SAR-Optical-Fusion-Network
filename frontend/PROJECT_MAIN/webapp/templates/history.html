@@ -1,0 +1,18 @@
+{% extends "base.html" %}{% block title %}History{% endblock %}
+{% block content %}
+<div class="container py-3">
+  <h2>History</h2>
+  <div class="card shadow-sm mb-4"><div class="card-header bg-white fw-semibold">Cloud-removal runs ({{ rows|length }})</div>
+  <div class="table-responsive"><table class="table table-hover table-sm align-middle mb-0">
+    <thead class="table-light"><tr><th>Date (UTC)</th><th>Input</th><th>Source</th><th class="text-end">Cloud</th><th class="text-end">Conf.</th><th class="text-end">PSNR in → out</th><th class="text-end">SAM</th><th></th></tr></thead>
+    <tbody>{% for r in rows %}<tr>
+      <td class="text-nowrap">{{ r.created_at }}</td><td class="text-break"><a href="{{ url_for('result', uid=r.uid) }}">{{ r.input_name }}</a></td><td>{{ r.source }}</td>
+      <td class="text-end">{{ r.cloud_cover|pct }}</td><td class="text-end">{{ r.confidence|pct }}</td>
+      <td class="text-end text-nowrap">{% if r.psnr_pred is not none %}{{ r.psnr_input|num }} → {{ r.psnr_pred|num }}{% else %}–{% endif %}</td><td class="text-end">{{ r.sam_pred|num }}</td>
+      <td class="text-end"><form method="post" action="{{ url_for('delete_prediction', uid=r.uid) }}" class="d-inline" data-confirm="Delete this record and its files?"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button></form></td>
+    </tr>{% else %}<tr><td colspan="8" class="text-muted">No runs yet.</td></tr>{% endfor %}</tbody></table></div></div>
+  <div class="card shadow-sm"><div class="card-header bg-white fw-semibold">Your account activity (last 100)</div>
+  <div class="table-responsive"><table class="table table-sm mb-0"><thead class="table-light"><tr><th>Date (UTC)</th><th>Action</th><th>Detail</th><th>IP</th></tr></thead>
+    <tbody>{% for a in acts %}<tr><td class="text-nowrap">{{ a.created_at }}</td><td><span class="badge bg-secondary">{{ a.action }}</span></td><td class="text-break">{{ a.detail }}</td><td>{{ a.ip or '' }}</td></tr>{% endfor %}</tbody></table></div></div>
+</div>
+{% endblock %}

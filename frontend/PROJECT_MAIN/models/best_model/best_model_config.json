@@ -1,0 +1,31 @@
+{
+  "model_key": "psfcr",
+  "display_name": "PSF-CR (paper)",
+  "spec": {
+    "cls": "PSFCR",
+    "kwargs": {
+      "c": 32,
+      "ws": 8
+    },
+    "display": "PSF-CR (paper)"
+  },
+  "input_size": [
+    256,
+    256
+  ],
+  "inputs": {
+    "sar": "(1,2,256,256) VV,VH normalised",
+    "opt": "(1,13,256,256) cloudy S2 normalised",
+    "mask": "(1,1,256,256) binary cloud mask"
+  },
+  "output": "(1,13,256,256) cloud-free S2 reflectance in [0,1] (x10000 = L1C DN)",
+  "test_metrics": {
+    "Model": "PSF-CR (paper)",
+    "PSNR": 30.0822,
+    "SSIM": 0.8635,
+    "SAM": 8.4417,
+    "MAE": 0.0245,
+    "Params (M)": 3.2971,
+    "Inference (ms/img)": 852.0819
+  }
+}

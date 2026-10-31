@@ -1,0 +1,28 @@
+{% extends "base.html" %}{% block title %}Result{% endblock %}
+{% block content %}
+{% set titles = {'cloudy':'Cloudy input (RGB)','sar':'SAR VV','mask':'Cloud mask','prediction':'Cloud-free prediction','uncertainty':'Uncertainty (TTA std, stretched)','reference':'Reference (cloud-free)'} %}
+<div class="container py-3">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <div><h3 class="mb-0 text-break">{{ r.input_name }}</h3>
+      <div class="small text-muted">{{ r.created_at }} UTC · {{ r.source }} · model {{ r.model }}{% if g.user.role=='admin' %} · owner {{ r.owner_name }} ({{ r.owner_email }}){% endif %}</div></div>
+    <a class="btn btn-success" href="{{ url_for('result_file', uid=r.uid, name='cloudfree.tif') }}"><i class="bi bi-download me-1"></i>Download cloud-free GeoTIFF</a>
+  </div>
+  <div class="row g-3 mb-3">
+    <div class="col-6 col-md-3"><div class="card stat shadow-sm"><div class="card-body"><div class="label">Cloud cover</div><div class="value">{{ r.cloud_cover|pct }}</div></div></div></div>
+    <div class="col-6 col-md-3"><div class="card stat shadow-sm"><div class="card-body"><div class="label">Confidence (TTA)</div><div class="value">{{ r.confidence|pct }}</div><div class="small text-muted">under clouds {{ r.confidence_cloud|pct }}</div></div></div></div>
+    <div class="col-6 col-md-3"><div class="card stat shadow-sm"><div class="card-body"><div class="label">PSNR input → output</div><div class="value">{% if r.psnr_pred is not none %}{{ r.psnr_input|num }} → {{ r.psnr_pred|num }}{% else %}–{% endif %}</div><div class="small text-muted">{% if r.psnr_pred is not none %}+{{ (r.psnr_pred - r.psnr_input)|num }} dB{% else %}no reference{% endif %}</div></div></div></div>
+    <div class="col-6 col-md-3"><div class="card stat shadow-sm"><div class="card-body"><div class="label">Runtime</div><div class="value">{{ (r.runtime_ms/1000)|num(1) }} s</div><div class="small text-muted">{{ 'TTA ×8' if r.tta else 'single pass' }}</div></div></div></div>
+  </div>
+  {% if r.psnr_pred is not none %}
+  <div class="card shadow-sm mb-3"><div class="card-body py-2">
+    <table class="table table-sm mb-0"><thead><tr><th></th><th class="text-end">PSNR (dB) ↑</th><th class="text-end">SAM (°) ↓</th><th class="text-end">MAE ↓</th></tr></thead>
+      <tbody><tr><td>Cloudy input</td><td class="text-end">{{ r.psnr_input|num }}</td><td class="text-end">{{ r.sam_input|num }}</td><td class="text-end">{{ r.mae_input|num(4) }}</td></tr>
+      <tr class="fw-semibold"><td>Prediction</td><td class="text-end">{{ r.psnr_pred|num }}</td><td class="text-end">{{ r.sam_pred|num }}</td><td class="text-end">{{ r.mae_pred|num(4) }}</td></tr></tbody></table>
+  </div></div>
+  {% endif %}
+  <div class="row g-3">
+    {% for k in imgs %}<div class="col-6 col-md-4"><div class="card shadow-sm"><img class="card-img-top pixel" src="{{ url_for('result_file', uid=r.uid, name=k ~ '.png') }}" alt="{{ titles[k] }}"><div class="card-body py-2 small text-center">{{ titles[k] }}</div></div></div>{% endfor %}
+  </div>
+  <p class="small text-muted mt-3">RGB composites use bands B04/B03/B02 with a ×3.3 stretch. Confidence = 1 − (pixel std across 8 rotated/flipped predictions ÷ 0.05), averaged. It measures model consistency, not accuracy.</p>
+</div>
+{% endblock %}

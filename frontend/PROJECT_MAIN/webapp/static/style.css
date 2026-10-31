@@ -1,0 +1,10 @@
+:root { --navy: #0b2545; }
+.bg-navy { background: var(--navy); }
+.hero { background: linear-gradient(135deg, #0b2545 0%, #13315c 55%, #1d6f8c 100%); }
+.stat-big { font-size: 1.9rem; font-weight: 700; }
+.feature i { font-size: 2rem; color: #1d6f8c; }
+.feature h5 { margin-top: .5rem; }
+.card.stat .label { font-size: .8rem; text-transform: uppercase; letter-spacing: .03em; color: #6c757d; }
+.card.stat .value { font-size: 1.6rem; font-weight: 700; }
+img.pixel { image-rendering: pixelated; aspect-ratio: 1 / 1; object-fit: cover; }
+body { background: #f5f7fb; }

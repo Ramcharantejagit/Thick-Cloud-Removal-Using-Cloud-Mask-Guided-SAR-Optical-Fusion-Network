@@ -1,0 +1,16 @@
+{% extends "base.html" %}{% block title %}Users{% endblock %}
+{% block content %}
+{% set badge = {'PENDING':'warning text-dark','APPROVED':'success','REJECTED':'danger','DISABLED':'secondary'} %}
+<div class="container py-3">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3"><h2 class="mb-0">Users</h2>
+    <div class="btn-group btn-group-sm">{% for s in ('', 'PENDING','APPROVED','REJECTED','DISABLED') %}<a class="btn {% if status==s %}btn-primary{% else %}btn-outline-primary{% endif %}" href="{{ url_for('admin_users', status=s) if s else url_for('admin_users') }}">{{ s.title() if s else 'All' }}</a>{% endfor %}</div></div>
+  <div class="card shadow-sm"><div class="table-responsive"><table class="table table-hover table-sm align-middle mb-0">
+    <thead class="table-light"><tr><th>Name</th><th>Email</th><th>Status</th><th>Registered</th><th>Last login</th><th class="text-end">Runs</th><th class="text-end">Actions</th></tr></thead>
+    <tbody>{% for u in users %}{% set back = request.full_path %}<tr>
+      <td>{{ u.name }}</td><td class="text-break">{{ u.email }}</td><td><span class="badge bg-{{ badge[u.status] }}">{{ u.status }}</span></td>
+      <td class="small text-nowrap">{{ u.created_at }}</td><td class="small text-nowrap">{{ u.last_login or '–' }}</td>
+      <td class="text-end"><a href="{{ url_for('admin_records', user=u.id) }}">{{ u.npred }}</a></td>
+      <td class="text-end text-nowrap">{% include "_user_actions.html" %} <a class="btn btn-sm btn-outline-info" href="{{ url_for('admin_activity', user=u.id) }}">Activity</a></td>
+    </tr>{% else %}<tr><td colspan="7" class="text-muted">No users.</td></tr>{% endfor %}</tbody></table></div></div>
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}{% block title %}All records{% endblock %}
+{% block content %}
+<div class="container py-3">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3"><h2 class="mb-0">All cloud-removal records</h2>
+    <form method="get" class="d-flex gap-2"><select class="form-select form-select-sm" name="user" aria-label="Filter by user"><option value="">All users</option>{% for u in users %}<option value="{{ u.id }}" {% if user_id==u.id %}selected{% endif %}>{{ u.name }} ({{ u.email }})</option>{% endfor %}</select><button class="btn btn-sm btn-primary">Filter</button></form></div>
+  <div class="card shadow-sm"><div class="table-responsive"><table class="table table-hover table-sm align-middle mb-0">
+    <thead class="table-light"><tr><th>Date (UTC)</th><th>User</th><th>Input</th><th>Source</th><th class="text-end">Cloud</th><th class="text-end">Conf.</th><th class="text-end">PSNR in → out</th><th class="text-end">Runtime</th></tr></thead>
+    <tbody>{% for r in rows %}<tr>
+      <td class="text-nowrap small">{{ r.created_at }}</td><td>{{ r.owner_name }}<div class="small text-muted">{{ r.owner_email }}</div></td>
+      <td class="text-break"><a href="{{ url_for('result', uid=r.uid) }}">{{ r.input_name }}</a></td><td>{{ r.source }}</td>
+      <td class="text-end">{{ r.cloud_cover|pct }}</td><td class="text-end">{{ r.confidence|pct }}</td>
+      <td class="text-end text-nowrap">{% if r.psnr_pred is not none %}{{ r.psnr_input|num }} → {{ r.psnr_pred|num }}{% else %}–{% endif %}</td><td class="text-end">{{ (r.runtime_ms/1000)|num(1) }} s</td>
+    </tr>{% else %}<tr><td colspan="8" class="text-muted">No records.</td></tr>{% endfor %}</tbody></table></div></div>
+</div>
+{% endblock %}
